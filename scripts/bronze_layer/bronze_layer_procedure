@@ -1,3 +1,4 @@
+/*
 # 🚀 Bronze Layer Data Load Procedure
 
 ## 📌 Overview
@@ -24,6 +25,7 @@ This procedure **does not take any input parameters**. It dynamically processes 
 ## 🛠️ Usage
 To execute the stored procedure, run the following SQL command:
     CALL bronze.load_bronze();
+*/
 
 CREATE OR REPLACE PROCEDURE bronze.load_bronze()
 LANGUAGE plpgsql

@@ -13,23 +13,31 @@ WARNING:
     and ensure you have proper backups before running this script.
 */
 
--- Connect to the default PostgreSQL database
---\c postgres
-
 -- Terminate existing connections and drop the 'datawarehouse' database if it exists
 DO $$ 
+DECLARE 
+    db_exists BOOLEAN;
 BEGIN
-    IF EXISTS (SELECT FROM pg_database WHERE datname = 'datawarehouse') THEN
-        PERFORM pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'datawarehouse';
+    -- Check if the database exists
+    SELECT EXISTS (SELECT FROM pg_database WHERE datname = 'datawarehouse') INTO db_exists;
+
+    IF db_exists THEN
+        -- Terminate all active connections to the database
+        PERFORM pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = 'datawarehouse' 
+        AND pid <> pg_backend_pid();  -- Avoid killing the current session
+        
+        -- Drop the database
         EXECUTE 'DROP DATABASE datawarehouse';
     END IF;
 END $$;
- 
+
 -- Create the 'datawarehouse' database
 CREATE DATABASE datawarehouse;
 
--- Connect to the newly created database
---\c datawarehouse;
+-- connect to your created database by following syntax :
+psql -U postgres -d datawarehouse
 
 -- Create Schemas
 CREATE SCHEMA bronze;

@@ -1,51 +1,46 @@
-📌 Procedure: Creating Gold Layer Views
+# 📌 Procedure: Creating Gold Layer Views
 
-🔹 Purpose
+## 🔹 Purpose
+The **Gold Layer** is designed to provide a **structured and enriched dataset** for **business intelligence and analytical reporting**. It consolidates, standardizes, and joins data from multiple **Silver Layer** tables into a **dimensional model**.
 
-The Gold Layer is designed to provide a structured and enriched dataset for business intelligence and analytical reporting. It consolidates, standardizes, and joins data from multiple Silver Layer tables into a dimensional model.
+---
 
-🛠 Tables Involved
+## 🛠️ Tables Involved
 
-1️⃣ gold.dim_customers (Customer Dimension)2️⃣ gold.dim_products (Product Dimension)3️⃣ gold.fact_sales (Fact Table - Sales Transactions)
+1. **gold.dim_customers** (*Customer Dimension*)
+2. **gold.dim_products** (*Product Dimension*)
+3. **gold.fact_sales** (*Fact Table - Sales Transactions*)
 
-📖 What Does This Process Do?
+---
 
-✅ Creates the gold.dim_customers View
+## 📚 What Does This Process Do?
 
-Generates a surrogate key using ROW_NUMBER() for customer_key.
+### ✅ Creates the `gold.dim_customers` View
+- Generates a **surrogate key** using `ROW_NUMBER()` as `customer_key`.
+- Selects and **standardizes customer data** from `silver.crm_cust_info`.
+- **Joins with** `silver.erp_cust_az12` to supplement missing values.
+- **Merges location details** from `silver.erp_loc_a101`.
+- **Ensures gender prioritization** (*CRM as primary source, ERP as fallback*).
 
-Selects and standardizes customer data from silver.crm_cust_info.
+### ✅ Creates the `gold.dim_products` View
+- Generates a **surrogate key** using `ROW_NUMBER()` as `product_key`.
+- Extracts and **standardizes product details** from `silver.crm_prd_info`.
+- **Enriches category details** from `silver.erp_px_cat_g1v2`.
+- **Filters out historical data**, keeping only active products.
 
-Joins with silver.erp_cust_az12 to supplement missing values.
+### ✅ Creates the `gold.fact_sales` View
+- Defines **`fact_sales`** as the primary sales transaction table.
+- Joins `crm_sales_details` with `gold.dim_products` and `gold.dim_customers`.
+- **Maps customer and product surrogate keys** for efficient analytics.
 
-Merges location details from silver.erp_loc_a101.
+---
 
-Ensures gender data prioritization (CRM as primary source, ERP as fallback).
+## 📀 How to Execute the Procedure?
 
-✅ Creates the gold.dim_products View
-
-Generates a surrogate key using ROW_NUMBER() for product_key.
-
-Extracts and standardizes product details from silver.crm_prd_info.
-
-Enriches category details from silver.erp_px_cat_g1v2.
-
-Filters out historical data, keeping only active products.
-
-✅ Creates the gold.fact_sales View
-
-Defines fact_sales as the primary sales transaction table.
-
-Joins crm_sales_details with gold.dim_products and gold.dim_customers.
-
-Maps customer and product surrogate keys for efficient analytics.
-
-📌 How to Execute the Procedure?
-
-1️⃣ Creating Gold Layer Views
-
+### 1️⃣ Creating Gold Layer Views
 To execute the transformation and generate the gold views, run the following queries:
 
+```sql
 -- Drop if exists and create gold.dim_customers
 DROP VIEW IF EXISTS gold.dim_customers;
 CREATE VIEW gold.dim_customers AS
@@ -68,7 +63,9 @@ LEFT JOIN silver.erp_cust_az12 ca
     ON ci.cst_key = ca.cid
 LEFT JOIN silver.erp_loc_a101 la
     ON ci.cst_key = la.cid;
+```
 
+```sql
 -- Drop if exists and create gold.dim_products
 DROP VIEW IF EXISTS gold.dim_products;
 CREATE VIEW gold.dim_products AS
@@ -88,7 +85,9 @@ FROM silver.crm_prd_info pn
 LEFT JOIN silver.erp_px_cat_g1v2 pc
     ON pn.cat_id = pc.id
 WHERE pn.prd_end_dt IS NULL;
+```
 
+```sql
 -- Drop if exists and create gold.fact_sales
 DROP VIEW IF EXISTS gold.fact_sales;
 CREATE VIEW gold.fact_sales AS
@@ -107,11 +106,14 @@ LEFT JOIN gold.dim_products pr
     ON sd.sls_prd_key = pr.product_number
 LEFT JOIN gold.dim_customers cu
     ON sd.sls_cust_id = cu.customer_id;
+```
 
-🔍 Validating the Data
+---
 
+## 🔍 Validating the Data
 After creating the views, validate if data has been correctly transformed by running:
 
+```sql
 -- Count records in gold.dim_customers
 SELECT COUNT(*) FROM gold.dim_customers;
 
@@ -120,25 +122,37 @@ SELECT COUNT(*) FROM gold.dim_products;
 
 -- Count records in gold.fact_sales
 SELECT COUNT(*) FROM gold.fact_sales;
+```
 
-📌 Expected Output
+---
 
-If the process runs successfully, you should see:
+## 📈 Expected Output
 
+### ✅ **If the process runs successfully:**
+```markdown
 ==============================================
 >> GOLD LAYER VIEWS CREATED SUCCESSFULLY <<
 ==============================================
 ✔ gold.dim_customers view created
 ✔ gold.dim_products view created
 ✔ gold.fact_sales view created
+```
 
-If an error occurs:
-
-❌ ERROR OCCURRED WHILE CREATING GOLD LAYER VIEWS ❌
+### ❌ **If an error occurs:**
+```sql
+ERROR OCCURRED WHILE CREATING GOLD LAYER VIEWS ❌
 ERROR MESSAGE: relation "gold.dim_products" does not exist
 SQLSTATE CODE: 42P01
 DETAILS: Missing dependency in Silver Layer
+```
 
-🚀 Summary
+---
 
-✅ The Gold Layer provides clean, structured, and enriched data for reporting.✅ It contains Dimension Tables (dim_customers, dim_products) and a Fact Table (fact_sales).✅ The data is transformed and joined from Silver Layer tables.✅ Execute the provided SQL scripts to create and validate the views.
+## 🚀 Summary
+
+✅ The **Gold Layer** provides **clean, structured, and enriched** data for **reporting**.
+✅ It contains **Dimension Tables** (`dim_customers`, `dim_products`) and a **Fact Table** (`fact_sales`).
+✅ The data is **transformed and joined** from Silver Layer tables.
+✅ Execute the provided **SQL scripts** to create and validate the views.
+
+---

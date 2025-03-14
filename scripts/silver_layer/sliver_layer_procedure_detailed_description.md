@@ -70,29 +70,33 @@ Execute the following SQL command:
 
 ```sql
 CALL silver.load_silver();
-📌 Validating the Data
-Step 2: Verify Data Transfer
+```
+
+---
+
+## 📌 Validating the Data
+
+### **Step 2: Verify Data Transfer**
 After executing the procedure, use the following queries to check if the data was transferred correctly.
 
-✅ Check Row Count in bronze.erp_loc_a101 (Raw Data)
-sql
-Copy
-Edit
+#### ✅ Check Row Count in `bronze.erp_loc_a101` (Raw Data)
+```sql
 SELECT COUNT(*) FROM bronze.erp_loc_a101;
+```
 🔹 This checks the number of records in the bronze layer.
 
-✅ Check Row Count in silver.erp_loc_a101 (Processed Data)
-sql
-Copy
-Edit
+#### ✅ Check Row Count in `silver.erp_loc_a101` (Processed Data)
+```sql
 SELECT COUNT(*) FROM silver.erp_loc_a101;
+```
 🔹 This verifies how many records were successfully transformed and inserted into the silver layer.
 
-📌 Expected Output
-✅ If the process runs successfully
-markdown
-Copy
-Edit
+---
+
+## 📌 Expected Output
+
+### ✅ **If the process runs successfully**
+```plaintext
 ==============================================
 >> STARTING DATA TRANSFORMATION INTO SILVER LAYER <<
 ==============================================
@@ -110,16 +114,24 @@ Edit
 ------------------------------------------------------
 🎉 SILVER LAYER DATA TRANSFORMATION COMPLETED SUCCESSFULLY 🎉
 ==============================================
-❌ If an error occurs
-sql
-Copy
-Edit
+```
+
+### ❌ **If an error occurs**
+```plaintext
 ❌ ERROR OCCURRED WHILE LOADING DATA INTO SILVER LAYER ❌
 ERROR MESSAGE: INSERT has more target columns than expressions
 SQLSTATE CODE: 42601
 DETAILS: Column mismatch in table 'silver.erp_cust_az12'
-🚀 Summary
-✅ This procedure cleans, transforms, and loads raw data into the silver layer.
-✅ It includes error handling and performance tracking.
-✅ Run CALL silver.load_silver(); to execute it.
-✅ Use SELECT COUNT(*) queries to verify the data.
+```
+
+---
+
+## 🚀 Summary
+✅ This procedure cleans, transforms, and loads raw data into the silver layer.  
+✅ It includes error handling and performance tracking.  
+✅ Run `CALL silver.load_silver();` to execute it.  
+✅ Use `SELECT COUNT(*)` queries to verify the data.  
+
+---
+
+Let me know if you need further refinements or enhancements! 🚀

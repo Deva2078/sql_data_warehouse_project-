@@ -1,96 +1,101 @@
-📌 Procedure: silver.load_silver()
-🔹 Purpose
-The silver.load_silver() procedure is designed to extract, transform, and load (ETL) data from the bronze layer to the silver layer in a data warehouse.
+# 📌 Procedure: `silver.load_silver()`
 
-The bronze layer contains raw data.
-The silver layer contains cleaned and transformed data for further analysis.
-📖 What Does This Procedure Do?
-✨ 1. Prints Start Notification
-✅ Displays a notice that the ETL process for the silver layer has started.
+## 🔹 Purpose
+The `silver.load_silver()` procedure is designed to **Extract, Transform, and Load (ETL)** data from the **bronze layer** to the **silver layer** in a data warehouse.
 
-🚨 2. Handles Errors Gracefully
-✅ Uses a BEGIN...EXCEPTION block to catch and display errors if something goes wrong.
+- **Bronze Layer** → Contains *raw data*.
+- **Silver Layer** → Contains *cleaned and transformed data* for analysis.
 
-🔄 3. Loads Data into Silver Tables
-✅ Deletes old data (TRUNCATE) before inserting new data into each silver table.
-✅ Transforms data before inserting into the silver tables.
+---
 
-⏳ 4. Tracks Execution Time
-✅ Measures and prints the load duration for each table.
+## 📖 Steps to Execute the Procedure
 
-🛠️ Tables Involved
-1️⃣ silver.crm_cust_info (Customer Information)
-🔹 Extracts customer data from bronze.crm_cust_info.
-🔹 Ensures:
+### **Step 1: Start Notification**
+- Displays a message indicating that the **ETL process for the silver layer** has started.
 
-Names are trimmed.
-Marital status is standardized:
-'S' → 'Single'
-'M' → 'Married'
-Gender is standardized:
-'F' → 'Female'
-'M' → 'Male'
-Keeps only the latest record for each customer.
-2️⃣ silver.erp_cust_az12 (ERP Customer Information)
-🔹 Extracts customer records from bronze.erp_cust_az12.
-🔹 Fixes:
+### **Step 2: Handle Errors**
+- Uses a `BEGIN...EXCEPTION` block to **catch errors** and display a message if something goes wrong.
 
-Cleans customer IDs (removes "NAS" prefix).
-Handles invalid birth dates (removes future dates).
-Standardizes gender format (F, M, or n/a).
-Adds timestamp (dwh_create_date) to track when the record was inserted.
-3️⃣ silver.erp_loc_a101 (Location Data)
-🔹 Extracts location records from bronze.erp_loc_a101.
-🔹 Fixes:
+### **Step 3: Load Data into Silver Tables**
+- **Deletes old data** (*TRUNCATE*) before inserting new data.
+- **Transforms data** before inserting into the silver tables.
 
-Removes hyphens (-) from cid.
-Standardizes country names:
-'DE' → 'Germany'
-'US' / 'USA' → 'United States'
-Empty or NULL → 'n/a'
-Adds timestamp (dwh_create_date).
-4️⃣ silver.erp_px_cat_g1v2 (Product Categories)
-🔹 Extracts product category details from bronze.erp_px_cat_g1v2.
-🔹 Adds timestamp (dwh_create_date).
+### **Step 4: Track Execution Time**
+- Measures and **prints the load duration** for each table.
 
-📌 How to Execute the Procedure?
-1️⃣ Running the Procedure
-To execute the procedure, run:
+---
 
-sql
-Copy
-Edit
+## 🛠️ Tables Involved in Transformation
+
+### **1️⃣ silver.crm_cust_info (Customer Information)**
+- Extracts customer data from `bronze.crm_cust_info`.
+- Cleans the data:
+  - **Trims names**.
+  - **Standardizes marital status**:
+    - `'S' → 'Single'`
+    - `'M' → 'Married'`
+  - **Standardizes gender**:
+    - `'F' → 'Female'`
+    - `'M' → 'Male'`
+  - Keeps **only the latest record** for each customer.
+
+### **2️⃣ silver.erp_cust_az12 (ERP Customer Information)**
+- Extracts customer records from `bronze.erp_cust_az12`.
+- Fixes:
+  - **Removes "NAS" prefix** from customer IDs.
+  - **Filters out future birthdates**.
+  - **Standardizes gender format** (`F`, `M`, or `n/a`).
+  - Adds **timestamp (`dwh_create_date`)**.
+
+### **3️⃣ silver.erp_loc_a101 (Location Data)**
+- Extracts location records from `bronze.erp_loc_a101`.
+- Cleans the data:
+  - **Removes hyphens (`-`)** from `cid`.
+  - **Standardizes country names**:
+    - `'DE' → 'Germany'`
+    - `'US' / 'USA' → 'United States'`
+    - *Empty or NULL* → `'n/a'`
+  - Adds **timestamp (`dwh_create_date`)**.
+
+### **4️⃣ silver.erp_px_cat_g1v2 (Product Categories)**
+- Extracts product category details from `bronze.erp_px_cat_g1v2`.
+- Adds **timestamp (`dwh_create_date`)**.
+
+---
+
+## 📌 How to Execute the Procedure?
+
+### **Step 1: Run the Procedure**
+Execute the following SQL command:
+
+```sql
 CALL silver.load_silver();
-This will trigger the ETL process.
+📌 Validating the Data
+Step 2: Verify Data Transfer
+After executing the procedure, use the following queries to check if the data was transferred correctly.
 
-2️⃣ Validating the Data
-After executing the procedure, check if data was correctly transferred using these queries:
-
-🔹 Check Row Count in bronze.erp_loc_a101 (Raw Data)
-
+✅ Check Row Count in bronze.erp_loc_a101 (Raw Data)
 sql
 Copy
 Edit
 SELECT COUNT(*) FROM bronze.erp_loc_a101;
-This tells how many records exist in the bronze layer.
+🔹 This checks the number of records in the bronze layer.
 
-🔹 Check Row Count in silver.erp_loc_a101 (Processed Data)
-
+✅ Check Row Count in silver.erp_loc_a101 (Processed Data)
 sql
 Copy
 Edit
 SELECT COUNT(*) FROM silver.erp_loc_a101;
-This tells how many records were successfully transformed and inserted into the silver layer.
+🔹 This verifies how many records were successfully transformed and inserted into the silver layer.
 
 📌 Expected Output
-✅ If the process runs successfully:
+✅ If the process runs successfully
 markdown
 Copy
 Edit
 ==============================================
 >> STARTING DATA TRANSFORMATION INTO SILVER LAYER <<
 ==============================================
-...
 ✔ Data successfully inserted into: silver.crm_cust_info
 ⏳ Load Duration: 2.5 seconds
 ------------------------------------------------------
@@ -103,9 +108,9 @@ Edit
 ✔ Data successfully inserted into: silver.erp_px_cat_g1v2
 ⏳ Load Duration: 1.5 seconds
 ------------------------------------------------------
-🎉 **SILVER LAYER DATA TRANSFORMATION COMPLETED SUCCESSFULLY** 🎉
+🎉 SILVER LAYER DATA TRANSFORMATION COMPLETED SUCCESSFULLY 🎉
 ==============================================
-❌ If an error occurs:
+❌ If an error occurs
 sql
 Copy
 Edit

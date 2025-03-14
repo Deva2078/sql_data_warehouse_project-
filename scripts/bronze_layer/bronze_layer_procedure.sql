@@ -1,32 +1,3 @@
-/*
-# 🚀 Bronze Layer Data Load Procedure
-
-## 📌 Overview
-The **`bronze.load_bronze()`** procedure is designed to automate the **ETL (Extract, Transform, Load) process** for the Bronze layer of a data warehouse. It **truncates existing tables** and **loads fresh data** from CSV files into the respective tables.
-
-## 🎯 Purpose
-- **Truncate** existing data in Bronze tables before loading new data.
-- **Load data** from multiple source CSV files.
-- **Log execution time** for each table and total duration.
-- **Handle errors** and report issues during the process.
-
-## 🔗 Parameters
-This procedure **does not take any input parameters**. It dynamically processes a **predefined list of tables and file paths**.
-
-## 📜 Script Execution Flow
-1️⃣ **Start Logging**: Logs the start time of the overall process.  
-2️⃣ **Iterate Over Tables**:
-   - Truncate the table.
-   - Load new data using the `COPY` command.
-   - Capture **start time, end time, and duration** for each table.
-3️⃣ **Handle Errors**: If any error occurs, it logs the issue and moves to the next table.  
-4️⃣ **Print Total Execution Time** after all tables are processed.  
-
-## 🛠️ Usage
-To execute the stored procedure, run the following SQL command:
-    CALL bronze.load_bronze();
-*/
-
 CREATE OR REPLACE PROCEDURE bronze.load_bronze()
 LANGUAGE plpgsql
 AS $$

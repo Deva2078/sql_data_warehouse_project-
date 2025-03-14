@@ -1,123 +1,99 @@
-Procedure: bronze.load_bronze()
+# 📌 Procedure: `bronze.load_bronze()`
 
-📌 Purpose
+## 🔹 Purpose
+The `bronze.load_bronze()` procedure is designed to **Extract, Transform, and Load (ETL)** data from external **CSV files** into the **bronze layer** of a data warehouse.
 
-The bronze.load_bronze() procedure is designed to Extract, Transform, and Load (ETL) data from external CSV files into the bronze layer of a data warehouse.
+- **Bronze Layer** → Stores *raw, unprocessed data* directly from source systems.
 
-The bronze layer contains raw, unprocessed data that is loaded directly from source systems.
+---
 
-📖 What Does This Procedure Do?
+## 📖 What Does This Procedure Do?
 
-1️⃣ Prints Start Notification
+### ✅ 1. Prints Start Notification
+- Displays a message indicating the **bronze layer data load** process has begun.
 
-Displays a notice that the bronze layer data load process has started.
+### ✅ 2. Handles Errors Gracefully
+- Uses a `BEGIN...EXCEPTION` block to **catch errors** and display an appropriate message if something goes wrong.
 
-2️⃣ Handles Errors Gracefully
+### ✅ 3. Loads Data into Bronze Tables
+- **Deletes old data** (*TRUNCATE*) before inserting new data.
+- **Loads fresh data** from **CSV files** into the bronze tables.
 
-Uses a BEGIN...EXCEPTION block to catch and display errors if something goes wrong.
+### ✅ 4. Tracks Execution Time
+- Measures and **prints the load duration** for each table to track performance.
 
-3️⃣ Loads Data into Bronze Tables
+---
 
-Truncates old data (removes existing records before inserting new ones).
+## 🛠️ Tables Involved
 
-Loads fresh data from CSV files into the bronze tables.
+### **1️⃣ bronze.crm_cust_info (Customer Information)**
+- Extracts customer data from `source_crm/cust_info.csv`.
+- Ensures:
+  - Old data is removed before inserting new data.
+  - New data is inserted using the `COPY` command.
 
-4️⃣ Tracks Execution Time
+### **2️⃣ bronze.crm_prd_info (Product Information)**
+- Extracts product data from `source_crm/prd_info.csv`.
+- Ensures:
+  - Old data is removed.
+  - New records are inserted correctly.
 
-Measures and prints the load duration for each table to track performance.
+### **3️⃣ bronze.crm_sales_details (Sales Data)**
+- Extracts sales details from `source_crm/sales_details.csv`.
+- Ensures:
+  - Old sales records are removed.
+  - Fresh data is inserted into the table.
 
-🛠️ Tables Involved
+### **4️⃣ bronze.erp_cust_az12 (ERP Customer Information)**
+- Extracts customer records from `source_erp/cust_az12.csv`.
+- Ensures:
+  - Table is truncated before inserting data.
+  - New records are loaded properly.
 
-1️⃣ bronze.crm_cust_info (Customer Information)
+### **5️⃣ bronze.erp_loc_a101 (Location Data)**
+- Extracts location details from `source_erp/loc_a101.csv`.
+- Ensures:
+  - Table is refreshed with the latest data.
+  - Data is inserted correctly.
 
-Extracts customer data from source_crm/cust_info.csv.
+### **6️⃣ bronze.erp_px_cat_g1v2 (Product Categories)**
+- Extracts product categories from `source_erp/px_cat_g1v2.csv`.
+- Ensures:
+  - Table is cleared before loading data.
+  - New product category data is inserted.
 
-Ensures:
+---
 
-Old data is removed before inserting new data.
+## 📌 How to Execute the Procedure?
 
-New data is inserted using the COPY command.
+### **1️⃣ Running the Procedure**
+Execute the following command to trigger the **ETL process**:
 
-2️⃣ bronze.crm_prd_info (Product Information)
-
-Extracts product data from source_crm/prd_info.csv.
-
-Ensures:
-
-Old data is removed.
-
-New records are inserted correctly.
-
-3️⃣ bronze.crm_sales_details (Sales Data)
-
-Extracts sales details from source_crm/sales_details.csv.
-
-Ensures:
-
-Old sales records are removed.
-
-Fresh data is inserted into the table.
-
-4️⃣ bronze.erp_cust_az12 (ERP Customer Information)
-
-Extracts customer records from source_erp/cust_az12.csv.
-
-Ensures:
-
-Table is truncated before inserting data.
-
-New records are loaded properly.
-
-5️⃣ bronze.erp_loc_a101 (Location Data)
-
-Extracts location details from source_erp/loc_a101.csv.
-
-Ensures:
-
-Table is refreshed with latest data.
-
-Data is inserted correctly.
-
-6️⃣ bronze.erp_px_cat_g1v2 (Product Categories)
-
-Extracts product categories from source_erp/px_cat_g1v2.csv.
-
-Ensures:
-
-Table is cleared before loading data.
-
-New product category data is inserted.
-
-📌 How to Execute the Procedure?
-
-1️⃣ Running the Procedure
-
-To execute the procedure, run:
-
+```sql
 CALL bronze.load_bronze();
+```
 
-This will trigger the ETL process, loading data from the CSV files into the bronze layer tables.
+### **2️⃣ Validating the Data**
+After execution, verify that data was correctly transferred using these queries:
 
-2️⃣ Validating the Data
-
-After executing the procedure, check if data was correctly transferred using these queries:
-
-🔹 Check Row Count in bronze.crm_cust_info (Raw Data)
-
+#### 🔹 Check Row Count in `bronze.crm_cust_info` (Raw Data)
+```sql
 SELECT COUNT(*) FROM bronze.crm_cust_info;
+```
+This checks how many records exist in the **bronze layer**.
 
-This tells how many records exist in the bronze layer.
-
-🔹 Check Row Count in bronze.erp_loc_a101 (Processed Data)
-
+#### 🔹 Check Row Count in `bronze.erp_loc_a101` (Processed Data)
+```sql
 SELECT COUNT(*) FROM bronze.erp_loc_a101;
+```
+This verifies the number of transformed records inserted into the **bronze layer**.
 
-This verifies the number of transformed records inserted into the bronze layer.
+---
 
-📌 Expected Output
+## 📌 Expected Output
 
-If the process runs successfully:
-
+### ✅ If the process runs successfully:
+```plaintext
 ==============================================
 >> STARTING DATA LOAD INTO BRONZE LAYER <<
 ==============================================
@@ -141,17 +117,23 @@ If the process runs successfully:
 ------------------------------------------------------
 🎉 BRONZE LAYER DATA LOAD COMPLETED SUCCESSFULLY 🎉
 ==============================================
+```
 
-If an error occurs:
-
+### ❌ If an error occurs:
+```plaintext
 ❌ ERROR OCCURRED WHILE LOADING DATA INTO BRONZE LAYER ❌
 ERROR MESSAGE: COPY failed due to missing column
 SQLSTATE CODE: 23502
 DETAILS: Column mismatch in table 'bronze.erp_cust_az12'
+```
 
-🚀 Summary
+---
 
-✅ This procedure loads raw data from CSV files into the bronze layer.
-✅ It includes error handling and performance tracking.
-✅ Run CALL bronze.load_bronze(); to execute it.
-✅ Use SELECT COUNT(*) queries to verify the data.
+## 🚀 Summary
+✅ This procedure **loads raw data from CSV files** into the **bronze layer**.
+✅ It includes **error handling** and **performance tracking**.
+✅ Run `CALL bronze.load_bronze();` to execute it.
+✅ Use `SELECT COUNT(*)` queries to **verify the data**.
+
+Would you like to add logging improvements or automation for error tracking? 😊
+

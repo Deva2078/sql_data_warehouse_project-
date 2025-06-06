@@ -57,7 +57,7 @@ Develop a modern data warehouse using SQL Server to consolidate sales data, enab
 
 #### Specifications
 - **Data Sources**: Import data from two source systems (ERP and CRM) provided as CSV files.
-- **Data Quality**: Cleanse and resolve data quality issues prior to analysis.
+- **Data Quality**: Cleanse and resolve data quality issues before analysis.
 - **Integration**: Combine both sources into a single, user-friendly data model designed for analytical queries.
 - **Scope**: Focus on the latest dataset only; historization of data is not required.
 - **Documentation**: Provide clear documentation of the data model to support both business stakeholders and analytics teams.
@@ -112,7 +112,7 @@ A Special Thanks to Data with Baraa Youtube channel 👍👍👌👌👌
 
 ## 🌟 About Me
 
-Hi there! I'm **Deva The Develop**, also known as **It's Deva**. I’m an IT professional and passionate YouTuber on a mission to share knowledge and make working with data enjoyable and engaging!
+Hi there! I'm **Deva The Analyst**, also known as **It's Deva**. I’m an IT professional and passionate about Analytics, and to share knowledge and make working with data enjoyable and engaging!
 
 Let's stay in touch! Feel free to connect with me on the following platforms:
 
